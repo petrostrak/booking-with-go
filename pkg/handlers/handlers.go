@@ -1,16 +1,17 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
+
+	"github.com/petrostrak/booking-with-go/pkg/render"
 )
 
 // Home handler will return a simple msg to Writer
 func Home(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello world")
+	render.Template(w, "home.page.tmpl")
 }
 
 // About handler will return the info regarding the site
 func About(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "A bookings and reservation system")
+	render.Template(w, "about.page.tmpl")
 }
