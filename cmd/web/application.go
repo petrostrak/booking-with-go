@@ -1,4 +1,4 @@
-package app
+package main
 
 import (
 	"fmt"
@@ -16,24 +16,28 @@ const (
 
 // StartApp func will initializa the url mapping
 // and the server
-func StartApp() {
-	var appC config.AppConfig
+func startApp() {
+	var app config.AppConfig
 	tc, err := render.CreateTemplateCache()
 	if err != nil {
 		log.Fatal("cannot create template cache")
 	}
-	appC.TemplateCache = tc
-	appC.UseCache = false
+	app.TemplateCache = tc
+	app.UseCache = false
 
-	repo := handlers.NewRepo(&appC)
+	repo := handlers.NewRepo(&app)
 	handlers.NewHandlers(repo)
 
-	render.NewTemplates(&appC)
-
-	urlMapping()
+	render.NewTemplates(&app)
 
 	fmt.Println(fmt.Sprintf("Staring application on port %s", portNumber))
-	if err := http.ListenAndServe(portNumber, nil); err != nil {
+
+	serve := &http.Server{
+		Addr:    portNumber,
+		Handler: routes(&app),
+	}
+
+	if err = serve.ListenAndServe(); err != nil {
 		panic(err)
 	}
 }
