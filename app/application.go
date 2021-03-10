@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/petrostrak/booking-with-go/pkg/config"
+	"github.com/petrostrak/booking-with-go/pkg/handlers"
 	"github.com/petrostrak/booking-with-go/pkg/render"
 )
 
@@ -16,13 +17,18 @@ const (
 // StartApp func will initializa the url mapping
 // and the server
 func StartApp() {
-
-	var app config.AppConfig
+	var appC config.AppConfig
 	tc, err := render.CreateTemplateCache()
 	if err != nil {
 		log.Fatal("cannot create template cache")
 	}
-	app.TemplateCache = tc
+	appC.TemplateCache = tc
+	appC.UseCache = false
+
+	repo := handlers.NewRepo(&appC)
+	handlers.NewHandlers(repo)
+
+	render.NewTemplates(&appC)
 
 	urlMapping()
 
