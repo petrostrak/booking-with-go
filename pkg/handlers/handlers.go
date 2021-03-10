@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/petrostrak/booking-with-go/pkg/config"
+	"github.com/petrostrak/booking-with-go/pkg/models"
 	"github.com/petrostrak/booking-with-go/pkg/render"
 )
 
@@ -31,10 +32,14 @@ func NewHandlers(r *Repository) {
 
 // Home handler will return a simple msg to Writer
 func (Rp *Repository) Home(w http.ResponseWriter, r *http.Request) {
-	render.Template(w, "home.page.tmpl")
+	render.Template(w, "home.page.tmpl", &models.TemplateData{})
 }
 
 // About handler will return the info regarding the site
 func (Rp *Repository) About(w http.ResponseWriter, r *http.Request) {
-	render.Template(w, "about.page.tmpl")
+	StringMap := make(map[string]string)
+	StringMap["test"] = "hello, again"
+	render.Template(w, "about.page.tmpl", &models.TemplateData{
+		StringMap: StringMap,
+	})
 }

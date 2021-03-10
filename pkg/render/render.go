@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 
 	"github.com/petrostrak/booking-with-go/pkg/config"
+	"github.com/petrostrak/booking-with-go/pkg/models"
 )
 
 var (
@@ -21,8 +22,13 @@ func NewTemplates(a *config.AppConfig) {
 	appC = a
 }
 
+func AddDefaultData(td *models.TemplateData) *models.TemplateData {
+
+	return td
+}
+
 // Template renders a template
-func Template(w http.ResponseWriter, tmpl string) {
+func Template(w http.ResponseWriter, tmpl string, td *models.TemplateData) {
 	var tc map[string]*template.Template
 	if appC.UseCache {
 		tc = appC.TemplateCache
@@ -37,7 +43,9 @@ func Template(w http.ResponseWriter, tmpl string) {
 
 	buf := new(bytes.Buffer)
 
-	_ = t.Execute(buf, nil)
+	td = AddDefaultData(td)
+
+	_ = t.Execute(buf, td)
 
 	_, err := buf.WriteTo(w)
 	if err != nil {
