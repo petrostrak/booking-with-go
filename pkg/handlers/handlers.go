@@ -1,24 +1,21 @@
 package handlers
 
 import (
+	"github.com/tsawler/bookings-app/pkg/config"
+	"github.com/tsawler/bookings-app/pkg/models"
+	"github.com/tsawler/bookings-app/pkg/render"
 	"net/http"
-
-	"github.com/petrostrak/booking-with-go/pkg/config"
-	"github.com/petrostrak/booking-with-go/pkg/models"
-	"github.com/petrostrak/booking-with-go/pkg/render"
 )
 
-var (
-	// Repo used by the handlers
-	Repo *Repository
-)
+// Repo the repository used by the handlers
+var Repo *Repository
 
-// Repository struct
+// Repository is the repository type
 type Repository struct {
 	App *config.AppConfig
 }
 
-// NewRepo creates a new repositoty
+// NewRepo creates a new repository
 func NewRepo(a *config.AppConfig) *Repository {
 	return &Repository{
 		App: a,
@@ -30,23 +27,25 @@ func NewHandlers(r *Repository) {
 	Repo = r
 }
 
-// Home handler will return a simple msg to Writer
-func (rp *Repository) Home(w http.ResponseWriter, r *http.Request) {
+// Home is the handler for the home page
+func (m *Repository) Home(w http.ResponseWriter, r *http.Request) {
 	remoteIP := r.RemoteAddr
-	rp.App.Session.Put(r.Context(), "remote_ip", remoteIP)
+	m.App.Session.Put(r.Context(), "remote_ip", remoteIP)
 
-	render.Template(w, "home.page.tmpl", &models.TemplateData{})
+	render.RenderTemplate(w, "home.page.tmpl", &models.TemplateData{})
 }
 
-// About handler will return the info regarding the site
-func (rp *Repository) About(w http.ResponseWriter, r *http.Request) {
-	StringMap := make(map[string]string)
-	StringMap["test"] = "hello, again"
+// About is the handler for the about page
+func (m *Repository) About(w http.ResponseWriter, r *http.Request) {
+	// perform some logic
+	stringMap := make(map[string]string)
+	stringMap["test"] = "Hello, again"
 
-	remoteIP := rp.App.Session.GetString(r.Context(), "remote_ip")
-	StringMap["remote_ip"] = remoteIP
+	remoteIP := m.App.Session.GetString(r.Context(), "remote_ip")
+	stringMap["remote_ip"] = remoteIP
 
-	render.Template(w, "about.page.tmpl", &models.TemplateData{
-		StringMap: StringMap,
+	// send data to the template
+	render.RenderTemplate(w, "about.page.tmpl", &models.TemplateData{
+		StringMap: stringMap,
 	})
 }

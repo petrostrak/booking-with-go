@@ -2,25 +2,21 @@ package main
 
 import (
 	"fmt"
+	"github.com/alexedwards/scs/v2"
+	"github.com/tsawler/bookings-app/pkg/config"
+	"github.com/tsawler/bookings-app/pkg/handlers"
+	"github.com/tsawler/bookings-app/pkg/render"
 	"log"
 	"net/http"
 	"time"
-
-	"github.com/alexedwards/scs/v2"
-	"github.com/petrostrak/booking-with-go/pkg/config"
-	"github.com/petrostrak/booking-with-go/pkg/handlers"
-	"github.com/petrostrak/booking-with-go/pkg/render"
 )
 
-const (
-	portNumber = ":8000"
-)
+const portNumber = ":8080"
 
-var (
-	app     config.AppConfig
-	session *scs.SessionManager
-)
+var app config.AppConfig
+var session *scs.SessionManager
 
+// main is the main function
 func main() {
 	// change this to true when in production
 	app.InProduction = false

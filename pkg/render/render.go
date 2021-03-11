@@ -3,23 +3,21 @@ package render
 import (
 	"bytes"
 	"fmt"
+	"github.com/tsawler/bookings-app/pkg/config"
+	"github.com/tsawler/bookings-app/pkg/models"
 	"html/template"
 	"log"
 	"net/http"
 	"path/filepath"
-
-	"github.com/petrostrak/booking-with-go/pkg/config"
-	"github.com/petrostrak/booking-with-go/pkg/models"
 )
 
-var (
-	functions = template.FuncMap{}
-	appC      *config.AppConfig
-)
+var functions = template.FuncMap{}
+
+var app *config.AppConfig
 
 // NewTemplates sets the config for the template package
 func NewTemplates(a *config.AppConfig) {
-	appC = a
+	app = a
 }
 
 func AddDefaultData(td *models.TemplateData) *models.TemplateData {
@@ -27,18 +25,20 @@ func AddDefaultData(td *models.TemplateData) *models.TemplateData {
 	return td
 }
 
-// Template renders a template
-func Template(w http.ResponseWriter, tmpl string, td *models.TemplateData) {
+// RenderTemplate renders a template
+func RenderTemplate(w http.ResponseWriter, tmpl string, td *models.TemplateData) {
 	var tc map[string]*template.Template
-	if appC.UseCache {
-		tc = appC.TemplateCache
+
+	if app.UseCache {
+		// get the template cache from the app config
+		tc = app.TemplateCache
 	} else {
 		tc, _ = CreateTemplateCache()
 	}
 
 	t, ok := tc[tmpl]
 	if !ok {
-		log.Fatal("could not get template from template cache")
+		log.Fatal("Could not get template from template cache")
 	}
 
 	buf := new(bytes.Buffer)
