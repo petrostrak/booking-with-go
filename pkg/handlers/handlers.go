@@ -1,10 +1,11 @@
 package handlers
 
 import (
-	"github.com/tsawler/bookings-app/pkg/config"
-	"github.com/tsawler/bookings-app/pkg/models"
-	"github.com/tsawler/bookings-app/pkg/render"
 	"net/http"
+
+	"github.com/petrostrak/booking-with-go/pkg/config"
+	"github.com/petrostrak/booking-with-go/pkg/models"
+	"github.com/petrostrak/booking-with-go/pkg/render"
 )
 
 // Repo the repository used by the handlers
