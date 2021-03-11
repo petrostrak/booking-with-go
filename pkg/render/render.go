@@ -3,10 +3,10 @@ package render
 import (
 	"bytes"
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 	"path/filepath"
-	"text/template"
 
 	"github.com/petrostrak/booking-with-go/pkg/config"
 	"github.com/petrostrak/booking-with-go/pkg/models"
