@@ -10,18 +10,43 @@ import (
 	"github.com/alexedwards/scs/v2"
 	"github.com/petrostrak/booking-with-go/internal/config"
 	"github.com/petrostrak/booking-with-go/internal/handlers"
+	"github.com/petrostrak/booking-with-go/internal/helpers"
 	"github.com/petrostrak/booking-with-go/internal/models"
 	"github.com/petrostrak/booking-with-go/internal/render"
 )
 
 const portNumber = ":8080"
 
-var app config.AppConfig
-var session *scs.SessionManager
+var (
+	app      config.AppConfig
+	session  *scs.SessionManager
+	infoLog  *log.Logger
+	errorLog *log.Logger
+)
 
-// main is the main function
 func main() {
+	err := run()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Println(fmt.Sprintf("Staring application on port %s", portNumber))
+
+	srv := &http.Server{
+		Addr:    portNumber,
+		Handler: routes(&app),
+	}
+
+	err = srv.ListenAndServe()
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func run() error {
+	// what am I going to put in the session
 	gob.Register(models.Reservation{})
+
 	// change this to true when in production
 	app.InProduction = false
 
@@ -37,6 +62,7 @@ func main() {
 	tc, err := render.CreateTemplateCache()
 	if err != nil {
 		log.Fatal("cannot create template cache")
+		return err
 	}
 
 	app.TemplateCache = tc
@@ -44,18 +70,9 @@ func main() {
 
 	repo := handlers.NewRepo(&app)
 	handlers.NewHandlers(repo)
+	render.NewTemplates(&app)
+	helpers.NewHelpers(&app)
 
 	render.NewTemplates(&app)
-
-	fmt.Println(fmt.Sprintf("Staring application on port %s", portNumber))
-
-	srv := &http.Server{
-		Addr:    portNumber,
-		Handler: routes(&app),
-	}
-
-	err = srv.ListenAndServe()
-	if err != nil {
-		log.Fatal(err)
-	}
+	return nil
 }
