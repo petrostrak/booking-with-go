@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/petrostrak/booking-with-go/internal/config"
 	"github.com/petrostrak/booking-with-go/internal/driver"
@@ -67,11 +69,33 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	sd := r.Form.Get("start_date")
+	ed := r.Form.Get("end_date")
+
+	// Mon Jan 2 15:04:05 MST 2006
+	// 01/02 03:04:05PM '06 -0700
+	layout := "2006-01-02"
+	startDate, err := time.Parse(layout, sd)
+	if err != nil {
+		helpers.ServerError(w, err)
+	}
+	endDate, err := time.Parse(layout, ed)
+	if err != nil {
+		helpers.ServerError(w, err)
+	}
+	roomId, err := strconv.Atoi(r.Form.Get("room_id"))
+	if err != nil {
+		helpers.ServerError(w, err)
+	}
+
 	reservation := models.Reservation{
 		FirstName: r.Form.Get("first_name"),
 		LastName:  r.Form.Get("last_name"),
 		Email:     r.Form.Get("phone"),
 		Phone:     r.Form.Get("email"),
+		StartDate: startDate,
+		EndDate:   endDate,
+		RoomID:    roomId,
 	}
 
 	form := forms.New(r.PostForm)
@@ -88,6 +112,10 @@ func (m *Repository) PostReservation(w http.ResponseWriter, r *http.Request) {
 			Data: data,
 		})
 		return
+	}
+
+	if err := m.DB.InsertReservation(reservation); err != nil {
+		helpers.ServerError(w, err)
 	}
 
 	m.App.Session.Put(r.Context(), "reservation", reservation)
