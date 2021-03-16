@@ -34,13 +34,6 @@ func main() {
 
 	defer close(app.MailChan)
 	listenForMail()
-	// msg := models.MailData{
-	// 	To:      "asdf@gmail.com",
-	// 	From:    "me@here.com",
-	// 	Subject: "Some subject",
-	// 	Content: "asdfadfadf",
-	// }
-	// app.MailChan <- msg
 
 	fmt.Println(fmt.Sprintf("Staring application on port %s", portNumber))
 
