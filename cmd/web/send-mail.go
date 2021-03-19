@@ -25,7 +25,7 @@ func sendMsg(m models.MailData) {
 	server.Host = "localhost"
 	server.Port = 1025
 	server.KeepAlive = false
-	server.ConnectTimeout = 10
+	server.ConnectTimeout = 10 * time.Second
 	server.SendTimeout = 10 * time.Second
 
 	client, err := server.Connect()
@@ -47,9 +47,10 @@ func sendMsg(m models.MailData) {
 		msgToSend := strings.Replace(mailTemplate, "[%body%]", m.Content, 1)
 		email.SetBody(mail.TextHTML, msgToSend)
 	}
-
-	if err := email.Send(client); err != nil {
-		errorLog.Println(err)
+	err = email.Send(client)
+	if err != nil {
+		log.Println(err)
+	} else {
+		log.Println("Email sent!")
 	}
-	log.Println("Email sent")
 }

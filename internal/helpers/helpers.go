@@ -17,13 +17,11 @@ func NewHelpers(a *config.AppConfig) {
 	app = a
 }
 
-// ClientError helper func
 func ClientError(w http.ResponseWriter, status int) {
 	app.InfoLog.Println("Client error with status of", status)
 	http.Error(w, http.StatusText(status), status)
 }
 
-// ServerError helper func
 func ServerError(w http.ResponseWriter, err error) {
 	trace := fmt.Sprintf("%s\n%s", err.Error(), debug.Stack())
 	app.ErrorLog.Println(trace)
@@ -31,5 +29,6 @@ func ServerError(w http.ResponseWriter, err error) {
 }
 
 func IsAuthenticated(r *http.Request) bool {
-	return app.Session.Exists(r.Context(), "user_id")
+	exists := app.Session.Exists(r.Context(), "user_id")
+	return exists
 }
